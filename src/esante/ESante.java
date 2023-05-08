@@ -13,8 +13,14 @@ public class ESante {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         // TODO code application logic here
+        
+        dataBasecon db = new dataBasecon();
+        db.connectToDB();
+        db.SQLSelect("select * from employes");
+        db.affichresult();
+        db.disconect();
     }
-    
+
 }

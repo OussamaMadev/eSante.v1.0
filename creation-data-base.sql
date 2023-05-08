@@ -1,67 +1,85 @@
 -- creation-data-base
 -- data base for home haelth facility manag system
 
+CREATE SEQUENCE employes_seq START WITH 43529 INCREMENT BY 1
+/
+
 CREATE TABLE employes (
-    code INT AUTO_INCREMENT,
-    nom VARCHAR(50) NOT NULL,
-    prenom VARCHAR(50) NOT NULL,
-    secteur ENUM('médical', 'paramédical') NOT NULL,
+    code INT DEFAULT employes_seq.NEXTVAL PRIMARY KEY,
+    nom VARCHAR2(50) NOT NULL,
+      prenom VARCHAR2(50) NOT NULL,
+    secteur VARCHAR2(20) CHECK(secteur IN ('medical', 'paramedical')) NOT NULL,
     anciennete INT,
-    specialite VARCHAR(50),
-    constraint PK_employes primary key (code)
-);
+    specialite VARCHAR2(50)
+)
+/
+
 
 CREATE TABLE patients (
-    nss INT AUTO_INCREMENT,
-    nom VARCHAR(50) NOT NULL,
-    prenom VARCHAR(50) NOT NULL,
+    nss INT PRIMARY KEY not null,
+    nom VARCHAR2(50) NOT NULL,
+    prenom VARCHAR2(50) NOT NULL,
     date_naissance DATE,
-    adresse VARCHAR(255),
-    telephone VARCHAR(20),
-    email VARCHAR(255),
-    constraint PK_patients primary key (nss)
-);
+    adresse VARCHAR2(255),
+    telephone VARCHAR2(20),
+    email VARCHAR2(255)
+)
+/
+
+CREATE SEQUENCE reservations_seq START WITH 43529 INCREMENT BY 1
+/
 
 CREATE TABLE reservations (
-    numero INT AUTO_INCREMENT,
-    date_resa DATETIME,
-    date_dePrend date DEFAULT sysdate,
-    type_resa ENUM('médicale', 'paramédicale') NOT NULL,
-    service_resa ENUM('injection', 'changement_pansements', 'prise_tension', 'consultation') NOT NULL,
-    descRes VARCHAR(1000),
-    nss_patient INT NOT NULL,
-    code_employe INT NOT NULL,
+    numero INT DEFAULT reservations_seq.NEXTVAL PRIMARY KEY,
+    date_resa date,
+    date_dePrend DATE DEFAULT SYSDATE,
+    type_resa VARCHAR2(20) CHECK(type_resa IN ('medicale', 'paramedicale')) NOT NULL,
+    service_resa VARCHAR2(50) CHECK(service_resa IN ('injection', 'changement_pansements', 'prise_tension', 'consultation')) NOT NULL,
+    descRes VARCHAR2(1000),
+    nss INT NOT NULL,
+    code INT NOT NULL,
+    payed int,
+    constraint fk_reservations_patients FOREIGN KEY (nss) REFERENCES patients(nss),
+    constraint fk_reservations_employes FOREIGN KEY (code) REFERENCES employes(code)
+)
+/
 
-    constraint PK_reservations primary key (numero),
-    constraint fk_reservaions_patients FOREIGN KEY (nss_patient) REFERENCES patients(nss),
-    constraint fk_reservaion_employes FOREIGN KEY (code_employe) REFERENCES employes(code)
-);
+CREATE SEQUENCE consultations_seq START WITH 43529 INCREMENT BY 1;
 
 CREATE TABLE consultations (
-    id_consultation INT AUTO_INCREMENT,
-    
-    resultat VARCHAR(255),
-    traitement VARCHAR(255),
-    recommandation VARCHAR(255),
-    
-    -- FEEDBACK patient
-    notQualite INTEGER CHECK(ad >= 0 AND ad <= 10),
-    notPonctualite INTEGER CHECK(ad >= 0 AND ad <= 10),
-
-    
+    id_consultation INT DEFAULT consultations_seq.NEXTVAL PRIMARY KEY,
+    resultat VARCHAR2(255),
+    traitement VARCHAR2(255),
+    recommandation VARCHAR2(255),
+    notQualite NUMBER(2,0) CHECK (notQualite >= 0 AND notQualite <= 10),
+    notPonctualite NUMBER(2,0) CHECK (notPonctualite >= 0 AND notPonctualite <= 10),
     numero_resa INT NOT NULL,
-    
-    constraint PK_consultations primary key (id_consultation)  
-    constraint fk_consultations_reservations FOREIGN KEY (numero_resa) REFERENCES reservations(numero)
-);
+    CONSTRAINT fk_consultations_reservations FOREIGN KEY (numero_resa) REFERENCES reservations(numero)
+)
+/
 
+CREATE SEQUENCE demande_annulation_med_seq START WITH 43529 INCREMENT BY 1
+/
 
-CREATE TABLE DemandeAnnulationMed (
-    id INT not NULL AUTO_INCREMENT,
-    demandeDE ENUM ('respo','employe') not null,
-    
-    raison VARCHAR(255),
-    
-    numero_resa INT NOT NULL,  
-    constraint fk_consultations_reservations FOREIGN KEY (numero_resa) REFERENCES reservations(numero)
-);
+CREATE TABLE demande_annulation_med (
+    id INT DEFAULT demande_annulation_med_seq.NEXTVAL PRIMARY KEY,
+    demande_de VARCHAR2(20) CHECK (demande_de IN ('respo','employe')) NOT NULL,
+    raison VARCHAR2(255),
+    numero_resa INT NOT NULL,
+    CONSTRAINT fk_demande_annulation_med_reservations FOREIGN KEY (numero_resa) REFERENCES reservations(numero)
+)
+/
+
+CREATE TABLE clininfos (
+    nom_clinique VARCHAR2(50),
+    adresse VARCHAR2(255),
+    site_web VARCHAR2(200),
+    code_respo INT,
+    tel1 NUMBER(10,0),
+    tel2 NUMBER(10,0),
+    tel3 NUMBER(10,0),
+    admin_password INT
+)
+/
+CREATE synonym resArchive for reservations
+/
