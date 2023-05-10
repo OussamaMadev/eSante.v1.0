@@ -7,7 +7,7 @@ CREATE SEQUENCE employes_seq START WITH 43529 INCREMENT BY 1
 CREATE TABLE employes (
     code INT DEFAULT employes_seq.NEXTVAL PRIMARY KEY,
     nom VARCHAR2(50) NOT NULL,
-      prenom VARCHAR2(50) NOT NULL,
+    prenom VARCHAR2(50) NOT NULL,
     secteur VARCHAR2(20) CHECK(secteur IN ('medical', 'paramedical')) NOT NULL,
     anciennete INT,
     specialite VARCHAR2(50)
@@ -31,10 +31,10 @@ CREATE SEQUENCE reservations_seq START WITH 43529 INCREMENT BY 1
 
 CREATE TABLE reservations (
     numero INT DEFAULT reservations_seq.NEXTVAL PRIMARY KEY,
-    date_resa date,
+    date_resa timestamp,
     date_dePrend DATE DEFAULT SYSDATE,
-    type_resa VARCHAR2(20) CHECK(type_resa IN ('medicale', 'paramedicale')) NOT NULL,
-    service_resa VARCHAR2(50) CHECK(service_resa IN ('injection', 'changement_pansements', 'prise_tension', 'consultation')) NOT NULL,
+    type_resa VARCHAR2(20) CHECK(type_resa IN ('medicale', 'paramedicale')) ,
+    service_resa VARCHAR2(50) CHECK(service_resa IN ('injection', 'changement_pansements', 'prise_tension', 'consultation')) ,
     descRes VARCHAR2(1000),
     nss INT NOT NULL,
     code INT NOT NULL,
@@ -71,6 +71,7 @@ CREATE TABLE demande_annulation_med (
 /
 
 CREATE TABLE clininfos (
+    id int PRIMARY key,
     nom_clinique VARCHAR2(50),
     adresse VARCHAR2(255),
     site_web VARCHAR2(200),
